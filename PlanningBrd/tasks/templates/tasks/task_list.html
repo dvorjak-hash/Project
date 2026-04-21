@@ -1,0 +1,444 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+.tasks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.tasks-header h1 {
+    margin: 0;
+    color: #333;
+    font-size: 2em;
+    font-weight: 300;
+}
+
+.create-btn {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.create-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(72, 187, 120, 0.3);
+}
+
+.filters-section {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.filters-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    align-items: end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-group label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+}
+
+.filter-group select {
+    padding: 10px 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1em;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.filter-group select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.apply-filters-btn {
+    background: #667eea;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    align-self: end;
+}
+
+.apply-filters-btn:hover {
+    background: #5a67d8;
+    transform: translateY(-1px);
+}
+
+.stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 2em;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    color: #666;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tasks-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.task-item {
+    display: grid;
+        grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr 0.5fr;
+    border-bottom: 1px solid #e9ecef;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.task-tag {
+    display: inline-block;
+    background: #ebf8ff;
+    color: #2c5282;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.75em;
+    margin: 2px 2px 0 0;
+}
+
+.task-item:hover {
+    background: #f8f9fa;
+}
+
+.task-item:last-child {
+    border-bottom: none;
+}
+
+.task-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.1em;
+    color: #333;
+}
+
+.task-info p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.task-project {
+    background: #e6fffa;
+    color: #065f46;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.task-priority {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 500;
+    text-align: center;
+}
+
+.priority-high {
+    background: #fed7d7;
+    color: #c53030;
+}
+
+.priority-medium {
+    background: #fef5e7;
+    color: #d69e2e;
+}
+
+.priority-low {
+    background: #c6f6d5;
+    color: #276749;
+}
+
+.task-status {
+    text-align: center;
+}
+
+.status-completed {
+    background: #c6f6d5;
+    color: #276749;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 500;
+}
+
+.status-pending {
+    background: #fef5e7;
+    color: #d69e2e;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 500;
+}
+
+.task-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-small {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.8em;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-edit {
+    background: #f6ad55;
+    color: white;
+}
+
+.btn-edit:hover {
+    background: #ed8936;
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background: #f56565;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #e53e3e;
+    transform: translateY(-1px);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-state h2 {
+    color: #666;
+    margin-bottom: 20px;
+    font-weight: 300;
+}
+
+.empty-state p {
+    color: #999;
+    margin-bottom: 30px;
+    font-size: 1.1em;
+}
+
+@media (max-width: 768px) {
+    .tasks-header {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+
+    .filters-row {
+        grid-template-columns: 1fr;
+    }
+
+    .task-item {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .stats-bar {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+</style>
+
+<div class="tasks-header">
+    <h1>📝 Úkoly</h1>
+    <a href="{% url 'tasks:create_task' %}" class="create-btn">➕ Nový úkol</a>
+</div>
+
+<div class="stats-bar">
+    <div class="stat-card">
+        <span class="stat-number">{{ total_tasks }}</span>
+        <span class="stat-label">Celkem úkolů</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number">{{ completed_count }}</span>
+        <span class="stat-label">Dokončeno</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number">{{ pending_count }}</span>
+        <span class="stat-label">Zbývá</span>
+    </div>
+</div>
+
+<div class="filters-section">
+    <form method="get" class="filters-row">
+        <div class="filter-group">
+            <label for="status">Stav</label>
+            <select name="status" id="status">
+                <option value="all" {% if status_filter == 'all' %}selected{% endif %}>Všechny</option>
+                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Nedokončené</option>
+                <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Dokončené</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="priority">Priorita</label>
+            <select name="priority" id="priority">
+                <option value="all" {% if priority_filter == 'all' %}selected{% endif %}>Všechny</option>
+                <option value="high" {% if priority_filter == 'high' %}selected{% endif %}>Vysoká</option>
+                <option value="medium" {% if priority_filter == 'medium' %}selected{% endif %}>Střední</option>
+                <option value="low" {% if priority_filter == 'low' %}selected{% endif %}>Nízká</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="project">Projekt</label>
+            <select name="project" id="project">
+                <option value="all" {% if project_filter == 'all' %}selected{% endif %}>Všechny projekty</option>
+                {% for project in projects %}
+                    <option value="{{ project.id }}" {% if project_filter == project.id|stringformat:'s' %}selected{% endif %}>{{ project.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="tag">Tag</label>
+            <select name="tag" id="tag">
+                <option value="all" {% if tag_filter == 'all' %}selected{% endif %}>Všechny tagy</option>
+                {% for tag in tags %}
+                    <option value="{{ tag.name }}" {% if tag_filter == tag.name %}selected{% endif %}>{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="sort">Řadit podle</label>
+            <select name="sort" id="sort">
+                <option value="date" {% if sort_by == 'date' %}selected{% endif %}>Datum</option>
+                <option value="priority" {% if sort_by == 'priority' %}selected{% endif %}>Priorita</option>
+                <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Název</option>
+                <option value="project" {% if sort_by == 'project' %}selected{% endif %}>Projekt</option>
+                <option value="status" {% if sort_by == 'status' %}selected{% endif %}>Stav</option>
+            </select>
+        </div>
+
+        <button type="submit" class="apply-filters-btn">🔍 Filtrovat</button>
+    </form>
+</div>
+
+<div class="tasks-container">
+    {% if tasks %}
+        <div class="task-item" style="background: #f8f9fa; font-weight: 600; border-bottom: 2px solid #667eea;">
+            <div>Úkol</div>
+            <div>Priorita</div>
+            <div>Projekt</div>
+            <div>Tagy</div>
+            <div>Termín</div>
+            <div>Akce</div>
+        </div>
+
+        {% for task in tasks %}
+            <div class="task-item">
+                <div class="task-info">
+                    <h3>{{ task.title }}</h3>
+                    <p>
+                        {% if task.description %}{{ task.description|truncatechars:80 }}{% endif %}
+                        {% if task.start_time %} • {{ task.start_time }}{% if task.end_time %} - {{ task.end_time }}{% endif %}{% endif %}
+                    </p>
+                </div>
+
+                <div class="task-priority priority-{{ task.priority_css }}">
+                    {{ task.get_priority_display }}
+                </div>
+
+                <div>
+                    {% if task.project %}
+                        <span class="task-project">{{ task.project.title }}</span>
+                    {% else %}
+                        <span style="color: #999; font-style: italic;">Bez projektu</span>
+                    {% endif %}
+                </div>
+
+                <div>
+                    {% if task.tags.exists %}
+                        {% for tag in task.tags.all %}
+                            <span class="task-tag">{{ tag.name }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span style="color: #999; font-style: italic;">Bez tagů</span>
+                    {% endif %}
+                </div>
+
+                <div>
+                    {{ task.date|date:"d.m.Y" }}
+                </div>
+
+                <div class="task-actions">
+                    <a href="{% url 'tasks:edit_task' task.pk %}" class="btn-small btn-edit" title="Upravit">✏️</a>
+                    <a href="{% url 'tasks:delete_task' task.pk %}" class="btn-small btn-delete" title="Smazat">🗑️</a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <h2>Žádné úkoly</h2>
+            <p>Začněte vytvářením svého prvního úkolu!</p>
+            <a href="{% url 'tasks:create_task' %}" class="create-btn">Vytvořit první úkol</a>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+.projects-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.projects-header h1 {
+    margin: 0;
+    color: #333;
+    font-size: 2em;
+    font-weight: 300;
+}
+
+.create-btn {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.create-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(72, 187, 120, 0.3);
+}
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.project-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: all 0.3s;
+    border: 1px solid #e9ecef;
+}
+
+.project-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.project-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+}
+
+.project-title {
+    margin: 0 0 10px 0;
+    font-size: 1.4em;
+    font-weight: 500;
+}
+
+.project-title a {
+    color: white;
+    text-decoration: none;
+}
+
+.project-title a:hover {
+    text-decoration: underline;
+}
+
+.project-meta {
+    font-size: 0.9em;
+    opacity: 0.9;
+}
+
+.project-body {
+    padding: 20px;
+}
+
+.project-description {
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.project-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid #e9ecef;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.5em;
+    font-weight: 600;
+    color: #333;
+}
+
+.stat-label {
+    font-size: 0.8em;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.project-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-small {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: 500;
+    transition: all 0.2s;
+    font-size: 0.9em;
+    flex: 1;
+    text-align: center;
+}
+
+.btn-edit {
+    background: #f6ad55;
+    color: white;
+}
+
+.btn-edit:hover {
+    background: #ed8936;
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background: #f56565;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #e53e3e;
+    transform: translateY(-1px);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    grid-column: 1 / -1;
+}
+
+.empty-state h2 {
+    color: #666;
+    margin-bottom: 20px;
+    font-weight: 300;
+}
+
+.empty-state p {
+    color: #999;
+    margin-bottom: 30px;
+    font-size: 1.1em;
+}
+
+@media (max-width: 768px) {
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .projects-header {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+}
+</style>
+
+<div class="projects-header">
+    <h1>📋 Projekty</h1>
+    <a href="{% url 'tasks:create_project' %}" class="create-btn">➕ Nový projekt</a>
+</div>
+
+{% if projects %}
+    <div class="projects-grid">
+        {% for project in projects %}
+            <div class="project-card">
+                <div class="project-header">
+                    <h2 class="project-title">
+                        <a href="{% url 'tasks:project_detail' project.pk %}">{{ project.title }}</a>
+                    </h2>
+                    <div class="project-meta">
+                        {{ project.start_date|date:"d.m.Y" }} - {{ project.end_date|date:"d.m.Y" }}
+                    </div>
+                </div>
+
+                <div class="project-body">
+                    <div class="project-description">
+                        {{ project.description|truncatechars:120|default:"Bez popisu" }}
+                    </div>
+
+                    <div class="project-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">{{ project.tasks.count }}</span>
+                            <span class="stat-label">Úkolů</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ project.completed_task_count }}</span>
+                            <span class="stat-label">Dokončeno</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ project.pending_task_count }}</span>
+                            <span class="stat-label">Zbývá</span>
+                        </div>
+                    </div>
+
+                    <div class="project-actions">
+                        <a href="{% url 'tasks:edit_project' project.pk %}" class="btn-small btn-edit">✏️ Upravit</a>
+                        <a href="{% url 'tasks:delete_project' project.pk %}" class="btn-small btn-delete">🗑️ Smazat</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <h2>Žádné projekty</h2>
+        <p>Vytvořte svůj první projekt a začněte plánovat!</p>
+        <a href="{% url 'tasks:create_project' %}" class="create-btn">Vytvořit první projekt</a>
+    </div>
+{% endif %}
+
+{% endblock %}

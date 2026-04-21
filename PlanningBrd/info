@@ -1,0 +1,48 @@
+http://127.0.0.1:8000/tasks
+http://127.0.0.1:8000/admin
+
+venv/bin/activate
+
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+pkill -f "python manage.py runserver"
+
+username: user
+password: heslo
+
+CO OPRAVIT:
+
+To do:
+
+dashboard priorita (změnit z čísla na slovo)
+
+odstranit fajfku s dokončením úkolu u vytváření, ale jen jí přidat buď v části zobrazení projektu a jeho úkolů, nebo u všech úkolů
+
+opravit filtrování (priorita)
+
+přidat odpočet na projekty (kolik dní zbývá do konce), a to jak v zobrazení projektů, tak i v dashboardu (ukázat třeba i pomocí barvy a dát ty co končí nedříve na začátek)
+
+změnit kalendář, aby byl víc přehledný a lépe fungoval a pracoval s myšlenkou plánovače
+
+možnost si úkoly rozkliknout
+
+
+Hotovo (tak nějak):
+
+změnit, jak fungují tasky. Spíš bych vytvořil nový objekt 
+(nějaký obecný, jako jsou domácí práce, nebo věci, co jen člověk potřebuje udělat, napsat si a potom odškrtnout, že je udělal, měli by jen den, kdy jsou potřeba udělat), 
+a tasky dát jen k projektům rovnou, tam je asi i raději vytvářet a upravovat atd. Zobrazení všech tasků bych nechal. Přidal bych kolonku s zobrazením těch obecných věcí.
+
+
+
+
+CO DÁL:
+
+možnost upravy všeho!!!! (work in progress)
+přidat možnost skoku na úpravy kliknutím na věci v kalendáři
+dodělat strukturu
+předělat vzhled kalendáře
+víc promakat jak, bude fungovat celý kalendář
+
+opravit to, že když jsem přihlášenej na normální stránce, že pak můžu na admina bez přihlášení, když bych se tam neměl dostat (jenom admin ano)
