@@ -11,28 +11,17 @@ pkill -f "python manage.py runserver"
 username: user
 password: heslo
 
-CO OPRAVIT:
-
 To do:
 
-dashboard priorita (změnit z čísla na slovo)
+vyškrtnutí všeho v todo
 
-odstranit fajfku s dokončením úkolu u vytváření, ale jen jí přidat buď v části zobrazení projektu a jeho úkolů, nebo u všech úkolů
-
-opravit filtrování (priorita)
+(odstranit fajfku s dokončením úkolu u vytváření, ale jen jí přidat buď v části zobrazení projektu a jeho úkolů, nebo u všech úkolů)
 
 přidat odpočet na projekty (kolik dní zbývá do konce), a to jak v zobrazení projektů, tak i v dashboardu (ukázat třeba i pomocí barvy a dát ty co končí nedříve na začátek)
 
 změnit kalendář, aby byl víc přehledný a lépe fungoval a pracoval s myšlenkou plánovače
 
-možnost si úkoly rozkliknout
-
-
-Hotovo (tak nějak):
-
-změnit, jak fungují tasky. Spíš bych vytvořil nový objekt 
-(nějaký obecný, jako jsou domácí práce, nebo věci, co jen člověk potřebuje udělat, napsat si a potom odškrtnout, že je udělal, měli by jen den, kdy jsou potřeba udělat), 
-a tasky dát jen k projektům rovnou, tam je asi i raději vytvářet a upravovat atd. Zobrazení všech tasků bych nechal. Přidal bych kolonku s zobrazením těch obecných věcí.
+(možnost si úkoly rozkliknout)
 
 
 

@@ -40,7 +40,7 @@
                                 {% endif %}
                             </div>
                             <div class="task-priority priority-{{ task.priority }}">
-                                Priorita {{ task.priority }}
+                                Priorita {{ task.get_priority_display }}
                             </div>
                         </li>
                     {% endfor %}

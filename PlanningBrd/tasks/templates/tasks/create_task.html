@@ -184,6 +184,35 @@
 .project-info strong {
     color: #276749;
 }
+
+.time-toggle {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.time-toggle button {
+    background: #e2e8f0;
+    color: #4a5568;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.time-toggle button:hover {
+    background: #cbd5e0;
+}
+
+.time-fields {
+    display: none;
+    margin-top: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
 </style>
 
 <div class="create-container">
@@ -236,9 +265,11 @@
                 </div>
             </div>
 
-            <button type="button" id="toggle-time-fields" class="toggle-optional-btn">Přidat čas začátku / konce</button>
+            <div class="time-toggle">
+                <button type="button" id="toggle-time-btn">🕒 Přidat čas</button>
+            </div>
 
-            <div id="time-fields" class="optional-section{% if form.start_time.value or form.end_time.value %} open{% endif %}">
+            <div class="time-fields" id="time-fields">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="{{ form.start_time.id_for_label }}">Čas začátku</label>
@@ -258,22 +289,20 @@
                 </div>
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="{{ form.recurrence.id_for_label }}">Opakování</label>
-                    {{ form.recurrence }}
-                    {% if form.recurrence.errors %}
-                        <div class="error-message">{{ form.recurrence.errors.0 }}</div>
-                    {% endif %}
-                </div>
+            <div class="form-group">
+                <label for="{{ form.recurrence.id_for_label }}">Opakování</label>
+                {{ form.recurrence }}
+                {% if form.recurrence.errors %}
+                    <div class="error-message">{{ form.recurrence.errors.0 }}</div>
+                {% endif %}
+            </div>
 
-                <div class="form-group">
-                    <label for="{{ form.repeat_until.id_for_label }}">Opakovat do</label>
-                    {{ form.repeat_until }}
-                    {% if form.repeat_until.errors %}
-                        <div class="error-message">{{ form.repeat_until.errors.0 }}</div>
-                    {% endif %}
-                </div>
+            <div class="form-group" id="repeat-until-group" style="display: none;">
+                <label for="{{ form.repeat_until.id_for_label }}">Opakovat do</label>
+                {{ form.repeat_until }}
+                {% if form.repeat_until.errors %}
+                    <div class="error-message">{{ form.repeat_until.errors.0 }}</div>
+                {% endif %}
             </div>
 
             {% if not project %}
@@ -308,25 +337,47 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var toggleButton = document.getElementById('toggle-time-fields');
-        var timeFields = document.getElementById('time-fields');
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('toggle-time-btn');
+    const timeFields = document.getElementById('time-fields');
+    const recurrenceSelect = document.getElementById('{{ form.recurrence.id_for_label }}');
+    const repeatUntilGroup = document.getElementById('repeat-until-group');
 
-        function updateToggleText() {
-            if (timeFields.classList.contains('open')) {
-                toggleButton.textContent = 'Skrýt čas začátku / konce';
-            } else {
-                toggleButton.textContent = 'Přidat čas začátku / konce';
-            }
+    // Toggle time fields
+    toggleBtn.addEventListener('click', function() {
+        if (timeFields.style.display === 'none' || timeFields.style.display === '') {
+            timeFields.style.display = 'block';
+            toggleBtn.textContent = '🕒 Skrýt čas';
+        } else {
+            timeFields.style.display = 'none';
+            toggleBtn.textContent = '🕒 Přidat čas';
         }
-
-        updateToggleText();
-
-        toggleButton.addEventListener('click', function() {
-            timeFields.classList.toggle('open');
-            updateToggleText();
-        });
     });
+
+    // Show/hide repeat until field based on recurrence
+    if (recurrenceSelect) {
+        recurrenceSelect.addEventListener('change', function() {
+            if (this.value !== 'none') {
+                repeatUntilGroup.style.display = 'block';
+            } else {
+                repeatUntilGroup.style.display = 'none';
+            }
+        });
+
+        // Initial check
+        if (recurrenceSelect.value !== 'none') {
+            repeatUntilGroup.style.display = 'block';
+        }
+    }
+
+    // Check if time fields should be shown initially
+    const startTime = document.getElementById('{{ form.start_time.id_for_label }}');
+    const endTime = document.getElementById('{{ form.end_time.id_for_label }}');
+    if ((startTime && startTime.value) || (endTime && endTime.value)) {
+        timeFields.style.display = 'block';
+        toggleBtn.textContent = '🕒 Skrýt čas';
+    }
+});
 </script>
 
 {% endblock %}

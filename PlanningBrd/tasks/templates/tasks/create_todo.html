@@ -102,6 +102,23 @@
 .btn-secondary:hover {
     background: #cbd5e0;
 }
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.checkbox-group label {
+    margin: 0;
+    font-weight: normal;
+}
 </style>
 
 <div class="create-container">
@@ -132,10 +149,9 @@
                     <div class="error">{{ form.due_date.errors }}</div>
                 {% endif %}
             </div>
-            <div class="form-group">
-                <label for="{{ form.completed.id_for_label }}">
-                    {{ form.completed }} Splněno
-                </label>
+            <div class="checkbox-group">
+                {{ form.completed }}
+                <label for="{{ form.completed.id_for_label }}">Splněno</label>
                 {% if form.completed.errors %}
                     <div class="error">{{ form.completed.errors }}</div>
                 {% endif %}
