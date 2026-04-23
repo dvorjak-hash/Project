@@ -138,7 +138,7 @@
             <a href="{% url 'tasks:task_list' %}" class="{% if request.resolver_match.url_name == 'task_list' %}active{% endif %}">Úkoly</a>
             <a href="{% url 'tasks:todo_list' %}" class="{% if request.resolver_match.url_name == 'todo_list' %}active{% endif %}">To do</a>
             <a href="{% url 'tasks:user_settings' %}" class="{% if request.resolver_match.url_name == 'user_settings' %}active{% endif %}">Nastavení</a>
-            <a href="{% url 'admin:index' %}">Admin</a>
+            <!-- <a href="{% url 'admin:index' %}">Admin</a> -->
         </nav>
     </div>
 
