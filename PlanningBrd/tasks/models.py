@@ -39,6 +39,12 @@ class Project(models.Model):
     def pending_task_count(self):
         return self.tasks.filter(completed=False).count()
 
+    @property
+    def remaining_days(self):
+        from datetime import date
+        today = date.today()
+        return max(0, (self.end_date - today).days)
+
 
 class Task(models.Model):
     PRIORITY_HIGH = 1

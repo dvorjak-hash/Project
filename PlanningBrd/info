@@ -1,7 +1,7 @@
 http://127.0.0.1:8000/tasks
 http://127.0.0.1:8000/admin
 
-venv/bin/activate
+source venv/bin/activate
 
 python manage.py makemigrations
 python manage.py migrate
@@ -13,23 +13,22 @@ password: heslo
 
 To do:
 
-vyškrtnutí všeho v todo
-
 (odstranit fajfku s dokončením úkolu u vytváření, ale jen jí přidat buď v části zobrazení projektu a jeho úkolů, nebo u všech úkolů)
-
-přidat odpočet na projekty (kolik dní zbývá do konce), a to jak v zobrazení projektů, tak i v dashboardu (ukázat třeba i pomocí barvy a dát ty co končí nedříve na začátek)
 
 změnit kalendář, aby byl víc přehledný a lépe fungoval a pracoval s myšlenkou plánovače
 
-(možnost si úkoly rozkliknout)
+možnost si úkoly rozkliknout kdekoliv
+
+možnost potvrdit úkol bez rozklikávání detailů nebo úpravy (+ udělat vyškrtnutí)
+opravit vyškrtnutí všeho v todo
+
+dodělat předělání dashboardu
 
 
 
 
 CO DÁL:
 
-možnost upravy všeho!!!! (work in progress)
-přidat možnost skoku na úpravy kliknutím na věci v kalendáři
 dodělat strukturu
 předělat vzhled kalendáře
 víc promakat jak, bude fungovat celý kalendář

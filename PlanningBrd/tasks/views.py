@@ -105,11 +105,50 @@ def dashboard(request):
         due_date=date.today()
     ).order_by('created_at')
 
-    # Nadcházející projekty
+    # Probíhající projekty
+    current_projects = Project.objects.filter(
+        user=user,
+        start_date__lte=date.today(),
+        end_date__gte=date.today()
+    ).order_by('end_date')
+
+    # Nadcházející a po termínu
     upcoming_projects = Project.objects.filter(
         user=user,
-        end_date__gte=date.today()
-    ).order_by('end_date')[:3]
+        start_date__gt=date.today()
+    ).order_by('start_date')
+
+    overdue_projects = Project.objects.filter(
+        user=user,
+        end_date__lt=date.today()
+    ).order_by('-end_date')
+
+    # Úkoly k dokončení a přehledné seznamy
+    pending_tasks_list = Task.objects.filter(
+        user=user,
+        completed=False
+    ).order_by('date', 'start_time')[:6]
+
+    overdue_tasks = Task.objects.filter(
+        user=user,
+        completed=False,
+        date__lt=date.today()
+    ).order_by('date', 'start_time')[:6]
+
+    recent_completed_tasks = Task.objects.filter(
+        user=user,
+        completed=True
+    ).order_by('-date')[:6]
+
+    todo_pending = Todo.objects.filter(
+        user=user,
+        completed=False
+    ).order_by('due_date')[:6]
+
+    todo_completed = Todo.objects.filter(
+        user=user,
+        completed=True
+    ).order_by('-due_date')[:6]
 
     context = {
         'calendar': calendar,
@@ -117,12 +156,20 @@ def dashboard(request):
         'total_tasks': total_tasks,
         'completed_tasks': completed_tasks,
         'pending_tasks': pending_tasks,
+        'overdue_tasks': overdue_tasks.count(),
         'total_todos': total_todos,
         'completed_todos': completed_todos,
         'pending_todos': pending_todos,
         'recent_tasks': recent_tasks,
         'today_tasks': today_tasks,
+        'current_projects': current_projects,
         'upcoming_projects': upcoming_projects,
+        'overdue_projects': overdue_projects,
+        'pending_tasks_list': pending_tasks_list,
+        'overdue_tasks_list': overdue_tasks,
+        'recent_completed_tasks': recent_completed_tasks,
+        'todo_pending': todo_pending,
+        'todo_completed': todo_completed,
         'today_todos': today_todos,
     }
 
@@ -158,17 +205,41 @@ def calendar_events(request):
         return JsonResponse([], safe=False)
     
     projects = Project.objects.filter(calendar=calendar)
+    today = date.today()
 
     events = []
     for project in projects:
+        # Výpočet urgency podle zbývajícího času
+        total_days = (project.end_date - project.start_date).days
+        if total_days <= 0:
+            remaining_percentage = 0
+        else:
+            remaining_days = (project.end_date - today).days
+            remaining_percentage = max(0, remaining_days / total_days)
+        
+        if remaining_percentage > 0.5:
+            class_name = "urgency-low"  # zelená - nízká urgentnost
+        elif remaining_percentage > 0.25:
+            class_name = "urgency-medium"  # oranžová - střední urgentnost
+        else:
+            class_name = "urgency-high"  # červená - vysoká urgentnost
+        
+        # Jednodušší název s počtem zbývajících dní
+        remaining_days = max(0, (project.end_date - today).days)
+        title = f"{project.title} ({remaining_days} dní)"
+        
         events.append({
             "id": project.id,
-            "title": project.title,
+            "title": title,
             "start": project.start_date.isoformat(),
             "end": project.end_date.isoformat(),
             "url": f"/tasks/projects/{project.id}/",
+            "className": class_name,
             "extendedProps": {
-                "description": project.description
+                "description": project.description,
+                "remaining_days": remaining_days,
+                "total_days": total_days,
+                "remaining_percentage": remaining_percentage,
             }
         })
 
@@ -264,10 +335,15 @@ def create_task(request, project_id=None):
     date = request.GET.get("date")
 
     if request.method == "POST":
-        form = TaskForm(request.POST, user=user)
+        post_data = request.POST.copy()
+        if project:
+            post_data['project'] = project.id
+        form = TaskForm(post_data, user=user)
         if form.is_valid():
             task = form.save(commit=False)
             task.user = user
+            if project:
+                task.project = project
             task.save()
 
             tag_names = form.cleaned_data.get("tag_names", "")

@@ -39,6 +39,60 @@
 #calendar {
     max-width: 1200px;
     margin: 20px auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.fc-header-toolbar {
+    background: #f8f9fa;
+    padding: 15px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.fc-button {
+    background: #007bff !important;
+    border: none !important;
+    border-radius: 6px !important;
+    color: white !important;
+    font-weight: 500 !important;
+    transition: background 0.2s !important;
+}
+
+.fc-button:hover {
+    background: #0056b3 !important;
+}
+
+.fc-button-active {
+    background: #0056b3 !important;
+}
+
+.fc-daygrid-day:hover {
+    background: #f8f9fa;
+}
+
+.fc-event.urgency-low {
+    background-color: #28a745 !important;
+    border-color: #28a745 !important;
+    color: white !important;
+}
+
+.fc-event.urgency-medium {
+    background-color: #fd7e14 !important;
+    border-color: #fd7e14 !important;
+    color: white !important;
+}
+
+.fc-event.urgency-high {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: white !important;
+}
+
+.fc-tooltip {
+    max-width: 300px;
+    word-wrap: break-word;
 }
 
 .modal {

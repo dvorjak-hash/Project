@@ -305,7 +305,9 @@
                 {% endif %}
             </div>
 
-            {% if not project %}
+            {% if project %}
+                <input type="hidden" name="project" value="{{ project.id }}">
+            {% else %}
                 <div class="form-group">
                     <label for="{{ form.project.id_for_label }}">Projekt</label>
                     {{ form.project }}
