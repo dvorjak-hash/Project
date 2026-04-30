@@ -136,10 +136,20 @@
 
 .task-item {
     display: grid;
-        grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr 0.5fr;
+        grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr 1fr;
     border-bottom: 1px solid #e9ecef;
     align-items: center;
     transition: background-color 0.2s;
+}
+
+.task-item.completed .task-info h3 {
+    text-decoration: line-through;
+    color: #999;
+}
+
+.task-item.completed .task-info p {
+    color: #bbb;
+    text-decoration: line-through;
 }
 
 .task-tag {
@@ -164,6 +174,16 @@
     margin: 0 0 5px 0;
     font-size: 1.1em;
     color: #333;
+    transition: all 0.2s;
+}
+
+.task-info h3:hover {
+    color: #667eea;
+}
+
+.task-info h3 a {
+    color: inherit;
+    text-decoration: none;
 }
 
 .task-info p {
@@ -230,6 +250,8 @@
 .task-actions {
     display: flex;
     gap: 5px;
+    justify-content: center;
+    align-items: center;
 }
 
 .btn-small {
@@ -250,6 +272,26 @@
 
 .btn-edit:hover {
     background: #ed8936;
+    transform: translateY(-1px);
+}
+
+.btn-complete {
+    background: #48bb78;
+    color: white;
+}
+
+.btn-complete:hover {
+    background: #38a169;
+    transform: translateY(-1px);
+}
+
+.btn-complete-active {
+    background: #276749;
+    color: white;
+}
+
+.btn-complete-active:hover {
+    background: #22543d;
     transform: translateY(-1px);
 }
 
@@ -391,9 +433,9 @@
         </div>
 
         {% for task in tasks %}
-            <div class="task-item">
+            <div class="task-item{% if task.completed %} completed{% endif %}">
                 <div class="task-info">
-                    <h3>{{ task.title }}</h3>
+                    <h3><a href="{% url 'tasks:task_detail' task.pk %}" style="color: inherit; text-decoration: none;">{{ task.title }}</a></h3>
                     <p>
                         {% if task.description %}{{ task.description|truncatechars:80 }}{% endif %}
                         {% if task.start_time %} • {{ task.start_time }}{% if task.end_time %} - {{ task.end_time }}{% endif %}{% endif %}
@@ -427,6 +469,7 @@
                 </div>
 
                 <div class="task-actions">
+                    <a href="{% url 'tasks:toggle_task_completed' task.pk %}" class="btn-small {% if task.completed %}btn-complete-active{% else %}btn-complete{% endif %}" title="{% if task.completed %}Zrušit potvrzení{% else %}Potvrdit splnění{% endif %}">✓</a>
                     <a href="{% url 'tasks:edit_task' task.pk %}" class="btn-small btn-edit" title="Upravit">✏️</a>
                     <a href="{% url 'tasks:delete_task' task.pk %}" class="btn-small btn-delete" title="Smazat">🗑️</a>
                 </div>

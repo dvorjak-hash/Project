@@ -66,6 +66,20 @@
     transition: all 0.2s;
 }
 
+.task-item.completed {
+    opacity: 0.7;
+}
+
+.task-item.completed h4 {
+    text-decoration: line-through;
+    color: #999;
+}
+
+.task-item.completed p {
+    text-decoration: line-through;
+    color: #bbb;
+}
+
 .task-item:hover {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     transform: translateY(-1px);
@@ -80,6 +94,63 @@
     margin: 0;
     color: #666;
     font-size: 0.9em;
+}
+
+.task-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-task {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.85em;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-task-complete {
+    background: #48bb78;
+    color: white;
+}
+
+.btn-task-complete:hover {
+    background: #38a169;
+    transform: translateY(-1px);
+}
+
+.btn-task-complete-active {
+    background: #276749;
+    color: white;
+}
+
+.btn-task-complete-active:hover {
+    background: #22543d;
+    transform: translateY(-1px);
+}
+
+.btn-task-edit {
+    background: #f6ad55;
+    color: white;
+}
+
+.btn-task-edit:hover {
+    background: #ed8936;
+    transform: translateY(-1px);
+}
+
+.btn-task-delete {
+    background: #f56565;
+    color: white;
+}
+
+.btn-task-delete:hover {
+    background: #e53e3e;
+    transform: translateY(-1px);
 }
 
 .task-status {
@@ -216,16 +287,18 @@
     <a href="{% url 'tasks:create_task_for_project' project.pk %}" class="add-task-btn">➕ Přidat úkol</a>
 
     {% for task in project.tasks.all %}
-        <div class="task-item">
+        <div class="task-item{% if task.completed %} completed{% endif %}">
             <div class="task-info">
-                <h4>{{ task.title }}</h4>
+                <h4><a href="{% url 'tasks:task_detail' task.pk %}" style="color: inherit; text-decoration: none;">{{ task.title }}</a></h4>
                 <p>
                     {% if task.description %}{{ task.description|truncatechars:100 }}{% endif %}
                     {% if task.start_time %} • {{ task.start_time }}{% if task.end_time %} - {{ task.end_time }}{% endif %}{% endif %}
                 </p>
             </div>
-            <div class="task-status {% if task.completed %}status-completed{% else %}status-pending{% endif %}">
-                {% if task.completed %}✓ Dokončeno{% else %}⏳ Čeká{% endif %}
+            <div class="task-actions">
+                <a href="{% url 'tasks:toggle_task_completed' task.pk %}" class="btn-task {% if task.completed %}btn-task-complete-active{% else %}btn-task-complete{% endif %}" title="{% if task.completed %}Zrušit potvrzení{% else %}Potvrdit splnění{% endif %}">✓</a>
+                <a href="{% url 'tasks:edit_task' task.pk %}" class="btn-task btn-task-edit" title="Upravit">✏️</a>
+                <a href="{% url 'tasks:delete_task' task.pk %}" class="btn-task btn-task-delete" title="Smazat">🗑️</a>
             </div>
         </div>
     {% empty %}

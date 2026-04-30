@@ -408,6 +408,18 @@ def delete_task(request, pk):
     return render(request, "tasks/delete_task.html", {"task": task})
 
 
+@login_required
+def task_detail(request, pk):
+    task = get_object_or_404(Task, pk=pk, user=request.user)
+    return render(request, "tasks/task_detail.html", {"task": task})
+
+
+@login_required
+def toggle_task_completed(request, pk):
+    task = get_object_or_404(Task, pk=pk, user=request.user)
+    task.completed = not task.completed
+    task.save()
+    return redirect("tasks:task_list")
 
 
 def project_list(request):
