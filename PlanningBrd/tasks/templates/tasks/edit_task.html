@@ -302,7 +302,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Show/hide repeat until field based on recurrence
     if (recurrenceSelect) {
         recurrenceSelect.addEventListener('change', function() {
             if (this.value !== 'none') {
@@ -312,13 +311,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Initial check
         if (recurrenceSelect.value !== 'none') {
             repeatUntilGroup.style.display = 'block';
         }
     }
 
-    // Check if time fields should be shown initially
     const startTime = document.getElementById('{{ form.start_time.id_for_label }}');
     const endTime = document.getElementById('{{ form.end_time.id_for_label }}');
     if ((startTime && startTime.value) || (endTime && endTime.value)) {

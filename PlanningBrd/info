@@ -13,13 +13,19 @@ password: heslo
 
 To do:
 
-(odstranit fajfku s dokončením úkolu u vytváření, ale jen jí přidat buď v části zobrazení projektu a jeho úkolů, nebo u všech úkolů)
+Přidat místo tlačítka pro potvrzení fajfku jak v zobrazení všech úkolů, tak v detailech projektu
+
+předělat prostor zobrazení úkolů, aby bylo lépe vidět k jakému projektu to patří
+
+opravit filtrování, nebo ho odebrat (možná při vylepšení stránky se zobrazením všech úkolů filtrovat jen podle tech projektů)
 
 změnit kalendář, aby byl víc přehledný a lépe fungoval a pracoval s myšlenkou plánovače
 
 dodělat předělání dashboardu
 
-předělat prostor zobrazení úkolů, aby bylo lépe vidět k jakému projektu to patří
+přidat nějaké ukončení projektu, aby se v kalendáři vyškrtl a zšedl, aby tam nebyl červeně, jako by nebyl splňen
+
+
 
 
 
