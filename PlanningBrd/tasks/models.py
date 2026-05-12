@@ -27,6 +27,7 @@ class Project(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE)
+    completed = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -57,18 +58,6 @@ class Task(models.Model):
         (PRIORITY_LOW, "Nízká"),
     ]
 
-    RECURRENCE_NONE = "none"
-    RECURRENCE_DAILY = "daily"
-    RECURRENCE_WEEKLY = "weekly"
-    RECURRENCE_MONTHLY = "monthly"
-
-    RECURRENCE_CHOICES = [
-        (RECURRENCE_NONE, "Žádné"),
-        (RECURRENCE_DAILY, "Denně"),
-        (RECURRENCE_WEEKLY, "Týdně"),
-        (RECURRENCE_MONTHLY, "Měsíčně"),
-    ]
-
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="tasks")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -80,8 +69,6 @@ class Task(models.Model):
     end_time = models.TimeField(null=True, blank=True)
 
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=PRIORITY_MEDIUM)
-    recurrence = models.CharField(max_length=10, choices=RECURRENCE_CHOICES, default=RECURRENCE_NONE)
-    repeat_until = models.DateField(null=True, blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
     completed = models.BooleanField(default=False)
 
@@ -106,22 +93,10 @@ class Task(models.Model):
 class UserSettings(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     default_priority = models.IntegerField(choices=Task.PRIORITY_CHOICES, default=Task.PRIORITY_MEDIUM)
-    default_recurrence = models.CharField(max_length=10, choices=Task.RECURRENCE_CHOICES, default=Task.RECURRENCE_NONE)
     show_completed_tasks = models.BooleanField(default=True)
 
     def __str__(self):
         return f"Nastavení uživatele {self.user.username}"
-
-
-class Reminder(models.Model):
-    remind_at = models.DateTimeField()
-
-    text = models.CharField(max_length=200)
-
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.text
 
 
 class Todo(models.Model):

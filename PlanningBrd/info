@@ -13,18 +13,17 @@ password: heslo
 
 To do:
 
-Přidat místo tlačítka pro potvrzení fajfku jak v zobrazení všech úkolů, tak v detailech projektu
+(změnit kalendář, aby byl víc přehledný a lépe fungoval a pracoval s myšlenkou plánovače)
 
-předělat prostor zobrazení úkolů, aby bylo lépe vidět k jakému projektu to patří
+dodělat předělání dashboardu (když jsou projekty hotovy, tak úkoly zmizí z tech úkolů), upozornění, když nemáme hotové úkoly a chceme potvrdit projekt
 
-opravit filtrování, nebo ho odebrat (možná při vylepšení stránky se zobrazením všech úkolů filtrovat jen podle tech projektů)
+omezit, že nelze dávat u úkolů datum mimo období projektu
 
-změnit kalendář, aby byl víc přehledný a lépe fungoval a pracoval s myšlenkou plánovače
+opravit zaškrtnutí úkolů a projektu v zobrazení úkolů
 
-dodělat předělání dashboardu
+opravoval jsem to, že jsem mazal zbytečnou class reminder a recurrence, ale nedodělalo se to, tak ať to dodělá
 
-přidat nějaké ukončení projektu, aby se v kalendáři vyškrtl a zšedl, aby tam nebyl červeně, jako by nebyl splňen
-
+přednat na nový účet
 
 
 

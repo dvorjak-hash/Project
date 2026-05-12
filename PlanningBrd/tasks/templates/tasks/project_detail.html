@@ -108,6 +108,64 @@
     gap: 8px;
 }
 
+.task-checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s;
+}
+
+.task-checkbox-label:hover {
+    background: #e2e8f0;
+}
+
+.task-checkbox-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.custom-task-checkbox {
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    border: 2px solid #cbd5e0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    background: white;
+    flex-shrink: 0;
+}
+
+.task-checkbox-input:checked + .custom-task-checkbox {
+    background: #48bb78;
+    border-color: #48bb78;
+}
+
+.task-checkbox-input:checked + .custom-task-checkbox::before {
+    content: '✓';
+    color: white;
+    font-size: 0.95rem;
+    line-height: 0;
+}
+
+.task-checkbox-input:focus-visible + .custom-task-checkbox {
+    box-shadow: 0 0 0 4px rgba(72, 187, 120, 0.18);
+}
+
+.task-checkbox-text {
+    font-weight: 500;
+    color: #334155;
+}
+
 .btn-task {
     padding: 8px 14px;
     border: none;
@@ -121,6 +179,24 @@
     min-width: 40px;
     text-align: center;
     line-height: 1.4;
+}
+
+.btn-success {
+    background: #48bb78;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #38a169;
+}
+
+.btn-success-active {
+    background: #276749;
+    color: white;
+}
+
+.btn-success-active:hover {
+    background: #22543d;
 }
 
 .btn-task-complete {
@@ -306,7 +382,11 @@
                 </p>
             </div>
             <div class="task-actions">
-                <a href="{% url 'tasks:toggle_task_completed' task.pk %}" class="btn-task {% if task.completed %}btn-task-complete-active{% else %}btn-task-complete{% endif %}" title="{% if task.completed %}Zrušit potvrzení{% else %}Potvrdit splnění{% endif %}">✓</a>
+                <label class="task-checkbox-label">
+                    <input type="checkbox" class="task-checkbox-input" onchange="toggleTaskCompleted({{ task.pk }})" {% if task.completed %}checked{% endif %}>
+                    <span class="custom-task-checkbox"></span>
+                    <span class="task-checkbox-text">{% if task.completed %}Dokončeno{% else %}Dokončit{% endif %}</span>
+                </label>
                 <a href="{% url 'tasks:edit_task' task.pk %}" class="btn-task btn-task-edit" title="Upravit">✏️</a>
                 <a href="{% url 'tasks:delete_task' task.pk %}" class="btn-task btn-task-delete" title="Smazat">🗑️</a>
             </div>
@@ -320,9 +400,28 @@
 </div>
 
 <div class="action-buttons">
+    <a href="{% url 'tasks:toggle_project_completed' project.pk %}" class="btn {% if project.completed %}btn-success-active{% else %}btn-success{% endif %}">
+        {% if project.completed %}✓ Projekt dokončen{% else %}✓ Dokončit projekt{% endif %}
+    </a>
     <a href="{% url 'tasks:edit_project' project.pk %}" class="btn btn-warning">✏️ Upravit projekt</a>
     <a href="{% url 'tasks:delete_project' project.pk %}" class="btn btn-danger">🗑️ Smazat projekt</a>
     <a href="{% url 'tasks:project_list' %}" class="btn btn-secondary">⬅️ Zpět na projekty</a>
 </div>
+
+<script>
+    const csrfToken = '{{ csrf_token }}';
+
+    function toggleTaskCompleted(pk) {
+        fetch(`{% url 'tasks:toggle_task_completed' 0 %}`.replace('0', pk), {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json',
+            },
+        }).then(() => {
+            location.reload();
+        });
+    }
+</script>
 
 {% endblock %}

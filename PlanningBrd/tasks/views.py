@@ -151,12 +151,14 @@ def dashboard(request):
     # Úkoly k dokončení a přehledné seznamy
     pending_tasks_list = Task.objects.filter(
         user=user,
-        completed=False
+        completed=False,
+        project__completed=False
     ).order_by('date', 'start_time')[:6]
 
     overdue_tasks = Task.objects.filter(
         user=user,
         completed=False,
+        project__completed=False,
         date__lt=date.today()
     ).order_by('date', 'start_time')[:6]
 
@@ -242,7 +244,9 @@ def calendar_events(request):
             remaining_days = (project.end_date - today).days
             remaining_percentage = max(0, remaining_days / total_days)
         
-        if remaining_percentage > 0.5:
+        if project.completed:
+            class_name = "project-completed"
+        elif remaining_percentage > 0.5:
             class_name = "urgency-low"  # zelená - nízká urgentnost
         elif remaining_percentage > 0.25:
             class_name = "urgency-medium"  # oranžová - střední urgentnost
@@ -276,71 +280,34 @@ def calendar_events(request):
 def task_list(request):
     user = request.user
 
-    # Získání parametrů filtru a třídění z URL
-    status_filter = request.GET.get('status', 'all')
-    priority_filter = request.GET.get('priority', 'all')
-    project_filter = request.GET.get('project', 'all')
-    tag_filter = request.GET.get('tag', 'all')
-    sort_by = request.GET.get('sort', 'date')
+    # Získání projektů pro výběr
+    projects = Project.objects.filter(user=user).order_by('title')
 
-    # Základní queryset - pouze úkoly uživatele
+    # Vybrané projekty z GET parametru
+    selected_projects = request.GET.getlist('projects')
+    filter_submitted = request.GET.get('filter_submitted')
+    selected_project_ids = [int(pid) for pid in selected_projects if pid.isdigit()]
+
     tasks = Task.objects.filter(user=user)
+    if filter_submitted is not None and selected_project_ids:
+        tasks = tasks.filter(project_id__in=selected_project_ids)
 
-    # Aplikace filtrů
-    if status_filter == 'completed':
-        tasks = tasks.filter(completed=True)
-    elif status_filter == 'pending':
-        tasks = tasks.filter(completed=False)
-    else:
-        settings = getattr(request.user, 'usersettings', None)
-        if settings and not settings.show_completed_tasks:
-            tasks = tasks.filter(completed=False)
+    tasks = tasks.order_by('project__title', 'date', 'start_time')
 
-    if priority_filter != 'all':
-        try:
-            tasks = tasks.filter(priority=int(priority_filter))
-        except ValueError:
-            pass
-
-    if project_filter != 'all':
-        tasks = tasks.filter(project_id=project_filter)
-
-    if tag_filter != 'all':
-        tasks = tasks.filter(tags__name=tag_filter)
-
-    # Aplikace třídění
-    if sort_by == 'date':
-        tasks = tasks.order_by('date', 'start_time')
-    elif sort_by == 'priority':
-        tasks = tasks.order_by('priority', 'date')
-    elif sort_by == 'title':
-        tasks = tasks.order_by('title')
-    elif sort_by == 'project':
-        tasks = tasks.order_by('project__title', 'date')
-    elif sort_by == 'status':
-        tasks = tasks.order_by('completed', 'date')
-
-    # Získání projektů a tagů pro filtr
-    projects = Project.objects.filter(user=user)
-    tags = Tag.objects.filter(user=user).order_by('name')
-
-    # Statistiky pro dashboard-like informace
-    total_tasks = Task.objects.filter(user=user).count()
-    completed_count = Task.objects.filter(user=user, completed=True).count()
-    pending_count = total_tasks - completed_count
+    grouped_tasks = []
+    for project in projects:
+        if selected_project_ids and project.id not in selected_project_ids:
+            continue
+        project_tasks = tasks.filter(project=project)
+        if project_tasks.exists():
+            grouped_tasks.append((project, project_tasks))
 
     context = {
+        'grouped_tasks': grouped_tasks,
         'tasks': tasks,
         'projects': projects,
-        'tags': tags,
-        'status_filter': status_filter,
-        'priority_filter': priority_filter,
-        'project_filter': project_filter,
-        'tag_filter': tag_filter,
-        'sort_by': sort_by,
-        'total_tasks': total_tasks,
-        'completed_count': completed_count,
-        'pending_count': pending_count,
+        'selected_project_ids': selected_project_ids,
+        'filter_submitted': filter_submitted,
     }
 
     return render(request, "tasks/task_list.html", context)
@@ -370,13 +337,6 @@ def create_task(request, project_id=None):
             if project:
                 task.project = project
             task.save()
-
-            tag_names = form.cleaned_data.get("tag_names", "")
-            task.tags.set(_parse_tags(user, tag_names))
-
-            if task.completed and task.recurrence != Task.RECURRENCE_NONE:
-                _create_next_recurring_task(task)
-
             return redirect("tasks:project_detail", pk=task.project.id)
     else:
         initial = {}
@@ -385,7 +345,6 @@ def create_task(request, project_id=None):
         settings = getattr(user, 'usersettings', None)
         if settings:
             initial.setdefault("priority", settings.default_priority)
-            initial.setdefault("recurrence", settings.default_recurrence)
 
         form = TaskForm(initial=initial, user=user)
         
@@ -409,10 +368,6 @@ def edit_task(request, pk):
             updated_task = form.save(commit=False)
             updated_task.user = request.user
             updated_task.save()
-            
-            tag_names = form.cleaned_data.get("tag_names", "")
-            updated_task.tags.set(_parse_tags(request.user, tag_names))
-            
             return redirect("tasks:task_list")
     else:
         form = TaskForm(instance=task, user=request.user)
@@ -453,6 +408,15 @@ def toggle_task_completed(request, pk):
     return redirect("tasks:task_list")
 
 
+@login_required
+def toggle_project_completed(request, pk):
+    project = get_object_or_404(Project, pk=pk, user=request.user)
+    project.completed = not project.completed
+    project.save()
+    return redirect('tasks:project_detail', pk=project.pk)
+
+
+@login_required
 def project_list(request):
     projects = Project.objects.filter(user=request.user)
 

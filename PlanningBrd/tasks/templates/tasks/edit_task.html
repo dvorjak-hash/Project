@@ -247,30 +247,6 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="{{ form.tag_names.id_for_label }}">Tagy</label>
-                {{ form.tag_names }}
-                {% if form.tag_names.errors %}
-                    <div class="error-message">{{ form.tag_names.errors.0 }}</div>
-                {% endif %}
-            </div>
-
-            <div class="form-group">
-                <label for="{{ form.recurrence.id_for_label }}">Opakování</label>
-                {{ form.recurrence }}
-                {% if form.recurrence.errors %}
-                    <div class="error-message">{{ form.recurrence.errors.0 }}</div>
-                {% endif %}
-            </div>
-
-            <div class="form-group" id="repeat-until-group" style="display: none;">
-                <label for="{{ form.repeat_until.id_for_label }}">Opakovat do</label>
-                {{ form.repeat_until }}
-                {% if form.repeat_until.errors %}
-                    <div class="error-message">{{ form.repeat_until.errors.0 }}</div>
-                {% endif %}
-            </div>
-
             <div class="checkbox-group">
                 {{ form.completed }}
                 <label for="{{ form.completed.id_for_label }}">Dokončeno</label>
@@ -288,8 +264,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const toggleBtn = document.getElementById('toggle-time-btn');
     const timeFields = document.getElementById('time-fields');
-    const recurrenceSelect = document.getElementById('{{ form.recurrence.id_for_label }}');
-    const repeatUntilGroup = document.getElementById('repeat-until-group');
 
     // Toggle time fields
     toggleBtn.addEventListener('click', function() {
@@ -301,20 +275,6 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleBtn.textContent = '🕒 Přidat čas';
         }
     });
-
-    if (recurrenceSelect) {
-        recurrenceSelect.addEventListener('change', function() {
-            if (this.value !== 'none') {
-                repeatUntilGroup.style.display = 'block';
-            } else {
-                repeatUntilGroup.style.display = 'none';
-            }
-        });
-
-        if (recurrenceSelect.value !== 'none') {
-            repeatUntilGroup.style.display = 'block';
-        }
-    }
 
     const startTime = document.getElementById('{{ form.start_time.id_for_label }}');
     const endTime = document.getElementById('{{ form.end_time.id_for_label }}');

@@ -58,21 +58,14 @@ class TaskForm(forms.ModelForm):
         required=True,
         label="Projekt"
     )
-    tag_names = forms.CharField(
-        required=False,
-        label="Tagy",
-        help_text="Zadejte tagy oddělené čárkou",
-        widget=forms.TextInput(attrs={"placeholder": "např. práce, osobní"})
-    )
-    
+
     class Meta:
         model = Task
-        fields = ["title", "description", "date", "start_time", "end_time", "priority", "recurrence", "repeat_until", "completed", "project"]
+        fields = ["title", "description", "date", "start_time", "end_time", "priority", "completed", "project"]
         widgets = {
             "date": forms.DateInput(attrs={"type": "date"}),
             "start_time": forms.TimeInput(attrs={"type": "time"}),
             "end_time": forms.TimeInput(attrs={"type": "time"}),
-            "repeat_until": forms.DateInput(attrs={"type": "date"}),
         }
     
     def __init__(self, *args, user=None, **kwargs):
@@ -80,8 +73,6 @@ class TaskForm(forms.ModelForm):
         if user:
             self.fields['project'].queryset = Project.objects.filter(user=user)
             self.fields['project'].label = "Projekt"
-        if self.instance and self.instance.pk:
-            self.fields['tag_names'].initial = ", ".join(self.instance.tags.values_list("name", flat=True))
 
 class TodoForm(forms.ModelForm):
     class Meta:

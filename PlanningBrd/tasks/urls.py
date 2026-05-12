@@ -18,6 +18,7 @@ urlpatterns = [
     path("projects/<int:pk>/", views.project_detail, name="project_detail"),
     path("projects/<int:pk>/edit/", views.edit_project, name="edit_project"),
     path("projects/<int:pk>/delete/", views.delete_project, name="delete_project"),
+    path("projects/<int:pk>/toggle-completed/", views.toggle_project_completed, name="toggle_project_completed"),
     path("create-project-from-calendar/", views.create_project_from_calendar, name="create_project_from_calendar"),
     path("settings/", views.user_settings, name="user_settings"),
     
