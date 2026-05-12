@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from .models import Task, Project, Calendar, Tag, UserSettings, Todo
-from .forms import TaskForm, ProjectForm, CalendarForm, UserSettingsForm, TodoForm
+from .forms import TaskForm, ProjectForm, CalendarForm, UserSettingsForm, TodoForm, SignUpForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, logout
 from django.http import JsonResponse
 import json
 from django.views.decorators.csrf import csrf_exempt
@@ -22,6 +23,30 @@ def _parse_tags(user, raw_tags):
         tag, _ = Tag.objects.get_or_create(user=user, name=name)
         tags.append(tag)
     return tags
+
+
+def signup(request):
+    if request.method == "POST":
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect("tasks:dashboard")
+    else:
+        form = SignUpForm()
+
+    return render(request, "registration/signup.html", {"form": form})
+
+
+def home(request):
+    if request.user.is_authenticated:
+        return redirect("tasks:dashboard")
+    return redirect("login")
+
+
+def logout_view(request):
+    logout(request)
+    return redirect("login")
 
 
 def _add_months(value_date, months=1):
@@ -419,6 +444,12 @@ def toggle_task_completed(request, pk):
     task = get_object_or_404(Task, pk=pk, user=request.user)
     task.completed = not task.completed
     task.save()
+    
+    # Vrátit se na stranu, ze které uživatel přišel
+    referer = request.META.get('HTTP_REFERER', '')
+    if 'project' in referer and task.project:
+        return redirect('tasks:project_detail', pk=task.project.pk)
+    
     return redirect("tasks:task_list")
 
 

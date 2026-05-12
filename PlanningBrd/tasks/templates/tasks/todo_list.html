@@ -116,17 +116,72 @@
 }
 
 .completed {
-    text-decoration: line-through;
     opacity: 0.6;
+}
+
+.todo-item.completed .checkbox-text,
+.todo-item.completed .todo-description {
+    text-decoration: line-through;
+    color: #999;
 }
 
 .todo-actions {
     opacity: 1;
 }
 
-.checkbox {
-    margin-right: 10px;
-    transform: scale(1.2);
+.checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.custom-checkbox {
+    width: 28px;
+    height: 28px;
+    border-radius: 10px;
+    border: 2px solid #cbd5e0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    background: white;
+    flex-shrink: 0;
+}
+
+.checkbox-input:checked + .custom-checkbox {
+    background: #48bb78;
+    border-color: #48bb78;
+}
+
+.checkbox-input:checked + .custom-checkbox::before {
+    content: '✓';
+    color: white;
+    font-size: 1rem;
+    line-height: 0;
+}
+
+.checkbox-input:focus-visible + .custom-checkbox {
+    box-shadow: 0 0 0 4px rgba(72, 187, 120, 0.18);
+}
+
+.checkbox-text {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #333;
+}
+
+.todo-item.completed .checkbox-text {
+    text-decoration: line-through;
+    color: #999;
 }
 </style>
 
@@ -140,8 +195,11 @@
     <div class="todo-item {% if todo.completed %}completed{% endif %}">
         <div class="todo-content">
             <div class="todo-title">
-                <input type="checkbox" class="checkbox" onchange="toggleCompleted({{ todo.pk }})" {% if todo.completed %}checked{% endif %}>
-                {{ todo.title }}
+                <label class="checkbox-label">
+                    <input type="checkbox" class="checkbox-input" onchange="toggleCompleted({{ todo.pk }})" {% if todo.completed %}checked{% endif %}>
+                    <span class="custom-checkbox"></span>
+                    <span class="checkbox-text">{{ todo.title }}</span>
+                </label>
             </div>
             {% if todo.description %}
             <div class="todo-description">{{ todo.description }}</div>

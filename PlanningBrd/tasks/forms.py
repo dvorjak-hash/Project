@@ -1,5 +1,33 @@
 from django import forms
+from django.contrib.auth.models import User
 from .models import Task, Project, Calendar, Tag, UserSettings, Todo
+
+
+class SignUpForm(forms.ModelForm):
+    password = forms.CharField(
+        label="Heslo",
+        widget=forms.PasswordInput(attrs={"placeholder": "Heslo"}),
+    )
+
+    class Meta:
+        model = User
+        fields = ["username", "password"]
+        widgets = {
+            "username": forms.TextInput(attrs={"placeholder": "Uživatelské jméno"}),
+        }
+
+    def clean_username(self):
+        username = self.cleaned_data.get("username")
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("Toto uživatelské jméno je již obsazené.")
+        return username
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data["password"])
+        if commit:
+            user.save()
+        return user
 
 
 class CalendarForm(forms.ModelForm):

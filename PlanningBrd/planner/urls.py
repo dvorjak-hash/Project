@@ -17,11 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from django.views.generic.base import RedirectView
+from tasks import views as task_views
 
 urlpatterns = [
-    path('', RedirectView.as_view(url='/tasks/')),
+    path('', task_views.home, name='home'),
     path('admin/', admin.site.urls),
     path("tasks/", include(("tasks.urls", "tasks"), namespace="tasks")),
-    path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
+    path('logout/', task_views.logout_view, name='logout'),
+    path('signup/', task_views.signup, name='signup'),
 ]
